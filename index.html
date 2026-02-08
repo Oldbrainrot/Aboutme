@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cookies</title>
+<style>
+  body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    background: #000;
+  }
+
+  /* COOKIE POPUP */
+  #cookie {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: #111;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    z-index: 10;
+  }
+
+  #cookie button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 1em;
+  }
+
+  /* JUMPSCARE FULLSCREEN */
+  #scare {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+
+  #face {
+    width: 100%;
+    height: 100%;
+    background:
+      radial-gradient(circle at center, #fff 0%, #ccc 15%, #000 60%);
+    animation: zoom 0.12s infinite alternate;
+  }
+
+  @keyframes zoom {
+    from { transform: scale(1); }
+    to   { transform: scale(1.15); }
+  }
+</style>
+</head>
+<body>
+
+<audio id="audio" src="scream.mp3" crossorigin="anonymous"></audio>
+
+<div id="cookie">
+  🍪 Ta strona używa plików cookie<br>
+  <button onclick="trigger()">Akceptuj</button>
+  <button onclick="trigger()">Odrzuć</button>
+</div>
+
+<div id="scare">
+  <div id="face"></div>
+</div>
+
+<script>
+let ctx, source, bass, gain;
+
+function trigger() {
+  // usuń banner cookies
+  const cookie = document.getElementById("cookie");
+  if (cookie) cookie.remove();
+
+  const audio = document.getElementById("audio");
+
+  // Web Audio API – bass boost
+  ctx = new (window.AudioContext || window.webkitAudioContext)();
+  source = ctx.createMediaElementSource(audio);
+
+  bass = ctx.createBiquadFilter();
+  bass.type = "lowshelf";
+  bass.frequency.value = 150; // niżej = cięższy bas
+  bass.gain.value = 20;       // 15–25 = mocno
+
+  gain = ctx.createGain();
+  gain.gain.value = 1.3;
+
+  source.connect(bass);
+  bass.connect(gain);
+  gain.connect(ctx.destination);
+
+  // audio
+  audio.volume = 1.0;
+  audio.play();
+
+  // wibracje (mobile)
+  if (navigator.vibrate) {
+    navigator.vibrate([300,150,300,150,600]);
+  }
+
+  // jumpscare fullscreen
+  const scare = document.getElementById("scare");
+  if (scare) scare.style.display = "flex";
+}
+</script>
+
+</body>
+</html>
