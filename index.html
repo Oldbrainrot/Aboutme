@@ -98,10 +98,10 @@ function trigger() {
   audio.volume = 1.0;
   audio.play();
 
-  // wibracje (mobile)
-  if (navigator.vibrate) {
-    navigator.vibrate([300,150,300,150,600]);
-  }
+  // Wibracja 60 sekund ciągłej pracy
+if (navigator.vibrate) {
+  navigator.vibrate(60000); // 60000 ms = 60 sekund
+}
 
   // jumpscare fullscreen
   const scare = document.getElementById("scare");
